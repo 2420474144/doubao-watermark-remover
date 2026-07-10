@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>豆包水印去除工具</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="top-header">
+            <div class="logo">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" />
+                    <path d="M9 12l2 2 4-4" />
+                    <path d="M12 16v-4" />
+                </svg>
+                <span>水印去除工具</span>
+            </div>
+            <div class="header-actions">
+                <button id="downloadAllBtn" class="btn btn-secondary" disabled>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="7 10 12 15 17 10" />
+                        <line x1="12" y1="15" x2="12" y2="3" />
+                    </svg>
+                    批量下载
+                </button>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <aside class="toolbar">
+                <div class="tool-section">
+                    <h3>笔刷设置</h3>
+                    <div class="brush-control">
+                        <label>笔刷大小</label>
+                        <input type="range" id="brushSize" min="5" max="50" value="20">
+                        <span id="brushSizeValue">20px</span>
+                    </div>
+                    <div class="brush-preview" id="brushPreview"></div>
+                </div>
+
+                <div class="tool-section">
+                    <h3>操作</h3>
+                    <button id="removeWatermarkBtn" class="btn btn-primary" disabled>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                            <circle cx="12" cy="10" r="3" />
+                        </svg>
+                        一键去除水印
+                    </button>
+                    <button id="clearSelectionBtn" class="btn btn-secondary" disabled>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18" />
+                            <line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>
+                        清除选区
+                    </button>
+                    <button id="resetImageBtn" class="btn btn-secondary" disabled>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                            <path d="M3 3v5h5" />
+                        </svg>
+                        重置图片
+                    </button>
+                </div>
+
+                <div class="tool-section">
+                    <h3>提示</h3>
+                    <ul class="tips">
+                        <li>使用笔刷在图片上涂抹需要去除的水印区域</li>
+                        <li>调节笔刷大小以适应不同尺寸的水印</li>
+                        <li>点击"一键去除水印"处理选中区域</li>
+                    </ul>
+                </div>
+            </aside>
+
+            <div class="canvas-container">
+                <div class="canvas-wrapper">
+                    <canvas id="mainCanvas"></canvas>
+                    <div class="canvas-overlay" id="canvasOverlay">
+                        <div class="upload-hint">
+                            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                <polyline points="17 8 12 3 7 8" />
+                                <line x1="12" y1="3" x2="12" y2="15" />
+                            </svg>
+                            <p>点击或拖拽上传图片</p>
+                        </div>
+                    </div>
+                    <input type="file" id="fileInput" accept="image/*" multiple hidden>
+                </div>
+                <div class="canvas-footer">
+                    <span id="canvasStatus">未选择图片</span>
+                    <div class="zoom-controls">
+                        <button id="zoomOut">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="5" y1="12" x2="19" y2="12" />
+                            </svg>
+                        </button>
+                        <span id="zoomValue">100%</span>
+                        <button id="zoomIn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19" />
+                                <line x1="5" y1="12" x2="19" y2="12" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <aside class="image-list">
+                <div class="list-header">
+                    <h3>图片列表</h3>
+                    <span id="imageCount">0 张</span>
+                </div>
+                <div class="list-content" id="imageList">
+                    <div class="empty-state">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="3" y="3" width="18" height="18" rx="2" />
+                            <circle cx="8.5" cy="8.5" r="1.5" />
+                            <polyline points="21 15 16 10 5 21" />
+                        </svg>
+                        <p>暂无图片</p>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="loading-spinner"></div>
+            <p>正在处理中...</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
